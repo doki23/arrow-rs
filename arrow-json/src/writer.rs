@@ -421,9 +421,17 @@ pub fn record_batches_to_json_rows(
         let mut base = 0;
         for batch in batches {
             let row_count = batch.num_rows();
+            if row_count == 0 {
+                continue;
+            }
             for (j, col) in batch.columns().iter().enumerate() {
                 let col_name = schema.field(j).name();
-                set_column_for_json_rows(&mut rows[base..], row_count, col, col_name)?
+                set_column_for_json_rows(
+                    &mut rows[base..base + row_count],
+                    row_count,
+                    col,
+                    col_name,
+                )?
             }
             base += row_count;
         }
